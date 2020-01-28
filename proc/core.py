@@ -181,6 +181,10 @@ class Process(UnixProcess):
                 fields.append("%s=%r" % (name, value))
         return "%s(%s)" % (self.__class__.__name__, ", ".join(fields))
 
+    @property
+    def io(self):
+        return parse_process_io(self.proc_tree)
+    
     @lazy_property
     def cmdline(self):
         """
@@ -794,6 +798,31 @@ def parse_process_status(directory, silent=False):
             fields.extend(after_comm.split())
             return fields
 
+
+def parse_process_io(directory):
+    """
+    Read and parse the contents of /proc/[pid]/io file
+    """
+    contents = ''
+    with ProtectedAccess('io', "read process io file"):
+        with open(os.path.join(directory, 'io')) as handle:
+            contents = handle.read()
+
+    if contents.endswith('\0'):
+        contents = contents[:-1]
+
+    k_v = {}
+    for line in contents.splitlines():
+        try:
+            kv = line.split(':')
+            kv[0] = kv[0].strip()
+            kv[1] = int(kv[1].strip())
+
+            k_v.update({kv[0]: kv[1]})
+        except KeyError:
+            pass
+
+    return k_v
 
 def parse_process_cmdline(directory):
     """
