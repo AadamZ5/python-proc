@@ -804,6 +804,10 @@ def parse_process_io(directory):
     Read and parse the contents of /proc/[pid]/io file
     """
     contents = ''
+
+    if not os.path.exists(os.path.join(directory, 'io')):
+        return {}
+
     with ProtectedAccess('io', "read process io file"):
         with open(os.path.join(directory, 'io')) as handle:
             contents = handle.read()
