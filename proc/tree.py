@@ -102,6 +102,15 @@ class ProcessNode(Process):
             stack.extend(process.children)
             yield process
 
+    def update_descendants(self):
+        mapping = dict((p.pid, p) for p in find_processes(obj_type=type(self)))
+        for obj in mapping.values():
+            if obj.ppid != 0 and obj.ppid in mapping:
+                obj.parent = mapping[obj.ppid]
+                obj.parent.children.append(obj)
+
+        self.children = mapping[self.pid].children
+
     def find(self, *args, **kw):
         """
         Find the first child process of this process that matches one or more criteria.
