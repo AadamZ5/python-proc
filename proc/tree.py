@@ -110,9 +110,14 @@ class ProcessNode(Process):
                 obj.parent.children.append(obj)
 
         newchildren = mapping[self.pid].children
-        for child in newchildren:
-            if not child in self.children:
-                self.children.append(child)
+        for newc in newchildren:
+            found = False
+            for oldc in self.children:
+                if oldc.pid == newc.pid:
+                    found = True
+                    break
+            if not found:
+                self.children.append(newc)
 
     def find(self, *args, **kw):
         """
