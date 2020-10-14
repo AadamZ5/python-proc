@@ -1,7 +1,7 @@
 # proc: Simple interface to Linux process information.
 #
 # Author: Peter Odding <peter@peterodding.com>
-# Last Change: June 21, 2018
+# Last Change: April 26, 2020
 # URL: https://proc.readthedocs.io
 
 """
@@ -84,12 +84,33 @@ import sys
 # External dependencies.
 import coloredlogs
 from executor import ExternalCommandFailed, execute, which
-from humanfriendly import Spinner, Timer, parse_path
+from humanfriendly import Timer, parse_path
 from humanfriendly.terminal import usage, warning
+from humanfriendly.terminal.spinners import Spinner
 from verboselogs import VerboseLogger
 
 # Modules included in our package.
 from proc.core import find_processes
+
+# Public identifiers that require documentation.
+__all__ = (
+    'LAUNCH_TIMEOUT',
+    'NEW_STYLE_SOCKET',
+    'USAGE_TEXT',
+    'enable_gpg_agent',
+    'find_fixed_agent_socket',
+    'find_gpg_agent_info',
+    'find_open_unix_sockets',
+    'get_gpg_variables',
+    'have_agent_program',
+    'have_valid_agent_info',
+    'logger',
+    'main',
+    'parse_arguments',
+    'start_gpg_agent',
+    'validate_unix_socket',
+    'with_gpg_agent',
+)
 
 LAUNCH_TIMEOUT = 30
 """
@@ -334,7 +355,7 @@ def have_valid_agent_info():
 
     This function parses the ``$GPG_AGENT_INFO`` environment
     variable and validates the resulting UNIX socket filename
-    using :func:`validate_unix_socket()``.
+    using :func:`validate_unix_socket()`.
     """
     components = os.environ.get('GPG_AGENT_INFO', '').split(':')
     return components and validate_unix_socket(components[0])
@@ -367,7 +388,7 @@ def start_gpg_agent(timeout=LAUNCH_TIMEOUT):
     """
     timer = Timer()
     logger.info("Starting a new GPG agent daemon ..")
-    execute('gpg-agent', '--daemon', async=True, silent=True)
+    execute('gpg-agent', '--daemon', asynchronous=True, silent=True)
     with Spinner(timer=timer) as spinner:
         while timer.elapsed_time < LAUNCH_TIMEOUT:
             gpg_agent_info = find_gpg_agent_info()

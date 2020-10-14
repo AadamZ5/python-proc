@@ -1,7 +1,7 @@
 # proc: Simple interface to Linux process information.
 #
 # Author: Peter Odding <peter@peterodding.com>
-# Last Change: January 23, 2017
+# Last Change: April 26, 2020
 # URL: https://proc.readthedocs.io
 
 """
@@ -92,12 +92,30 @@ import sys
 # External dependencies.
 import coloredlogs
 from executor import ExternalCommandFailed, execute, quote, which
-from humanfriendly import concatenate, format_timespan, pluralize, Spinner, Timer
+from humanfriendly import Timer, format_timespan
 from humanfriendly.terminal import usage, warning
+from humanfriendly.terminal.spinners import Spinner
+from humanfriendly.text import concatenate, pluralize
 
 # Modules provided by our package.
 from proc.core import sorted_by_pid
 from proc.tree import get_process_tree
+
+# Public identifiers that require documentation.
+__all__ = (
+    'ADDITIONS_SCRIPT_NAME',
+    'CronDaemonNotRunning',
+    'USAGE_TEXT',
+    'cron_graceful',
+    'ensure_root_privileges',
+    'find_cron_daemon',
+    'logger',
+    'main',
+    'parse_arguments',
+    'run_additions',
+    'terminate_cron_daemon',
+    'wait_for_processes',
+)
 
 # Initialize a logger.
 logger = logging.getLogger(__name__)
