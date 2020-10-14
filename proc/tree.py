@@ -109,7 +109,12 @@ class ProcessNode(Process):
                 obj.parent = mapping[obj.ppid]
                 obj.parent.children.append(obj)
 
-        newchildren = mapping[self.pid].children
+        newchildren = list()
+        try:
+            newchildren = mapping[self.pid].children
+        except KeyError as e:
+            return #Our PID must not exist anymore.
+        
         for newc in newchildren:
             found = False
             for oldc in self.children:
